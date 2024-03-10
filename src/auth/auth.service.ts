@@ -9,16 +9,18 @@ export class AuthService {
 
   async signup(dto: AuthDto) {
     // generate password hash using argon 2
-    const hash = await argon.hash(dto.password);    
-    
+    const hash = await argon.hash(dto.password);
+
     // save new user in db
     const user = await this.Prisma.user.create({
-        data: {
-            email: dto.email,
-            hash
-        }
-    })
+      data: {
+        email: dto.email,
+        hash,
+      },
+    });
     //return saved user
+
+    delete user.hash
 
     return user;
   }
