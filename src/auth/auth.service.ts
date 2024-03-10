@@ -30,12 +30,35 @@ export class AuthService {
         if (error.code === 'P2002') {
           throw new ForbiddenException('Credentials taken');
         }
-        throw error
+        throw error;
       }
     }
   }
 
-  signin() {
+  async signin(dto: AuthDto) {
+    //find user
+    const user = await this.Prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+
+    if (!user) {
+      throw new ForbiddenException('Credentials incorrect');
+    } else {
+      const hash = user.hash;
+      const valid = await argon.verify(hash, dto.password);
+
+      if (!valid) {
+        throw new ForbiddenException('Credentials incorrect');
+      } else {
+        delete user.hash;
+        return user;
+      }
+    }
+    //compare password
+    //return user
+
     return { msg: 'I am signed in' };
   }
 }

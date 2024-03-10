@@ -8,15 +8,14 @@ export class AuthController {
 
   @Post('signup')
   signup(@Body() dto: AuthDto) {
-    console.log({
-      dto,
-    });
-
     return this.Auth.signup(dto);
   }
 
   @Post('signin')
-  signin() {
-    return this.Auth.signin();
+  signin(@Body() dto: AuthDto) {
+    console.log({
+      dto,
+    });
+    return this.Auth.signin(dto);
   }
 }
