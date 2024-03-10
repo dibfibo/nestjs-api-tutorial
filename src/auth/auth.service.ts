@@ -7,6 +7,10 @@ export class AuthService {
   constructor(private Prisma: PrismaService) {}
 
   signup(dto: AuthDto) {
+    // generate password hash using argon 2
+    // save new user in db
+    //return saved user
+
     return { msg: 'I am signed up' };
   }
 
