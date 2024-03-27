@@ -11,6 +11,6 @@ export class UserController {
       user: req.user,
     });
 
-    return 'me';
+    return req.user;
   }
 }
