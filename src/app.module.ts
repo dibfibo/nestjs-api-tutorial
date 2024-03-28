@@ -9,13 +9,13 @@ import { BookmarkModule } from './bookmark/bookmark.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
     AuthModule,
     UserModule,
     BookmarkModule,
     PrismaModule,
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
   ],
   controllers: [],
   providers: [],
