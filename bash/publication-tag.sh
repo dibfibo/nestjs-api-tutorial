@@ -24,7 +24,7 @@ if [ -z "$version" ]; then
 fi
 
 # define commit message
-message="$project_name - $version - $environment_name"
+message="$project_name - $version - $environment_name --publication"
 
 # stage changes
 git add .
@@ -36,7 +36,7 @@ git commit -m "$message"
 timestamp=$(date +"%Y%m%d%H%M%S")
 
 # define tag name
-tag_name="$project_name-$environment_name-$timestamp __publication"
+tag_name="$project_name-$environment_name-$timestamp"
 
 # create tag
 git tag "$tag_name"
