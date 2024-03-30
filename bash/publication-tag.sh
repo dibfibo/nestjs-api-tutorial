@@ -46,4 +46,4 @@ git push origin HEAD --tags
 
 # push head with tags
 echo "$timestamp"
-git ls-remote origin
+git log
