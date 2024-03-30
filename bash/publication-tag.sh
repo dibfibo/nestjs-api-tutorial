@@ -36,7 +36,7 @@ git commit -m "$message"
 timestamp=$(date +"%Y%m%d%H%M%S")
 
 # define tag name
-tag_name="$project_name-$environment_name-$timestamp --publication"
+tag_name="$project_name-$environment_name-$timestamp __publication"
 
 # create tag
 git tag "$tag_name"
