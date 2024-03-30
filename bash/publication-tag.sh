@@ -46,4 +46,4 @@ git push origin HEAD --tags
 
 # push head with tags
 echo "$timestamp"
-git log -n 1 HEAD
+git log --oneline -n 1 HEAD
