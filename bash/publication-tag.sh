@@ -45,4 +45,4 @@ git tag "$tag_name"
 git push origin HEAD --tags
 
 # push head with tags
-git ls-remote origin
+git ls-remote origin -n 1
