@@ -7,7 +7,7 @@ if [ -z "$1" ]; then
 fi
 
 # Recupera il nome del progetto
-project_name="project_name"
+project_name="cms"
 
 # Recupera il nome dell'ambiente
 environment_name="$1" # Imposta manualmente o recupera da una variabile
