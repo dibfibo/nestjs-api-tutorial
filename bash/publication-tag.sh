@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Controlla se è stato fornito il nome dell'ambiente come argomento
+# check arguments
 if [ -z "$1" ]; then
     echo "Errore: specificare il nome dell'progetto come argomento dello script."
     exit 1
@@ -11,21 +11,22 @@ if [ -z "$2" ]; then
     exit 1
 fi
 
-# Recupera il nome del progetto
+# define project name
 project_name="$1"
 
-# Recupera il nome dell'ambiente
-environment_name="$2" # Imposta manualmente o recupera da una variabile
+# define environment name
+environment_name="$2"
 
-#version
+# read project version
 version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
 
+# check project version
 if [ -z "$version" ]; then
     echo "Errore: impossibile trovare la versione nel file package.json."
     exit 1
 fi
 
-# Crea il messaggio
+# define commit message
 message="$project_name - $version - pubblicazione in $environment_name"
 
 # stage changes
@@ -34,14 +35,14 @@ git add .
 # commit changes
 git commit -m "$message"
 
-# Genera timestamp
+# timestamp
 timestamp=$(date +"%Y%m%d%H%M%S")
 
-# Crea il nome del tag
+# define commit message
 tag="$project_name-$environment_name-$timestamp"
 
-# Crea il tag
+# create tag
 git tag "$tag"
 
-# Pusha il tag
+# push head with tags
 git push origin HEAD --tags
