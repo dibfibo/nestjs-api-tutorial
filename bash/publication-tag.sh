@@ -20,6 +20,11 @@ environment_name="$2" # Imposta manualmente o recupera da una variabile
 #version
 version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
 
+if [ -z "$version" ]; then
+    echo "Errore: impossibile trovare la versione nel file package.json."
+    exit 1
+fi
+
 # Crea il messaggio
 message="$project_name - $version - pubblicazione in $environment_name"
 
