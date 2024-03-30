@@ -12,7 +12,6 @@ environment_name="$1"
 
 
 # read project name
-echo $(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
 project_name=$(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
 
 # read project version
@@ -37,10 +36,13 @@ git commit -m "$message"
 timestamp=$(date +"%Y%m%d%H%M%S")
 
 # define tag name
-tag="$project_name-$environment_name-$timestamp"
+tag_name="$project_name-$environment_name-$timestamp"
 
 # create tag
-git tag "$tag"
+git tag "$tag_name"
 
 # push head with tags
 git push origin HEAD --tags
+
+# push head with tags
+git logs
