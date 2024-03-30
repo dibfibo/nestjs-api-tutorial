@@ -1,24 +1,19 @@
 #!/bin/bash
 
 # check arguments
-if [ -z "$1" ]; then
-    echo "Error: Specify project name."
-    exit 1
-fi
 
-if [ -z "$2" ]; then
+if [ -z "$1" ]; then
     echo "Error: Specify environment name."
     exit 1
 fi
 
-# define project name
-project_name="$1"
-
 # define environment name
-environment_name="$2"
+environment_name="$1"
+
+# read project name
+name=$(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
 
 # read project version
-echo "$(grep -o '"version": *"[^"]*"' package.json)"
 version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
 
 # check project version
