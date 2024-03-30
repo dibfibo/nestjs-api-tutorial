@@ -45,4 +45,5 @@ git tag "$tag_name"
 git push origin HEAD --tags
 
 # push head with tags
+echo "$timestamp"
 git ls-remote origin -n 1
