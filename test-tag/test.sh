@@ -10,7 +10,7 @@ environment_name="environment_name" # Imposta manualmente o recupera da una vari
 timestamp=$(date +"%Y%m%d%H%M%S")
 
 # Crea il nome del tag
-tag="$progetto-$ambiente-$timestamp"
+tag="$project_name-$environment_name-$timestamp"
 
 # Crea il messaggio
 message="$project_name - pubblicazione in $environment_name"
