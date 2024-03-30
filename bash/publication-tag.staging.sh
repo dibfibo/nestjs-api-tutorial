@@ -1,3 +1,3 @@
 #!/bin/bash
 
-"$PWD/bash/publication-tag.sh" "test" "test"
+"$PWD/bash/publication-tag.sh" "Cms" "staging"
