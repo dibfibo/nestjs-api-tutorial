@@ -18,6 +18,7 @@ project_name="$1"
 environment_name="$2"
 
 # read project version
+echo "$(grep -o '"version": *"[^"]*"' package.json)"
 version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
 
 # check project version
