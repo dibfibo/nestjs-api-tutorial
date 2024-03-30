@@ -2,12 +2,12 @@
 
 # check arguments
 if [ -z "$1" ]; then
-    echo "Errore: specificare il nome dell'progetto come argomento dello script."
+    echo "Error: Specify project name."
     exit 1
 fi
 
 if [ -z "$2" ]; then
-    echo "Errore: specificare il nome dell'ambiente come argomento dello script."
+    echo "Error: Specify environment name."
     exit 1
 fi
 
@@ -23,7 +23,7 @@ version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)
 
 # check project version
 if [ -z "$version" ]; then
-    echo "Errore: impossibile trovare la versione nel file package.json."
+    echo "Error: Cannot find version in package.json file."
     exit 1
 fi
 
@@ -39,7 +39,7 @@ git commit -m "$message"
 # timestamp
 timestamp=$(date +"%Y%m%d%H%M%S")
 
-# define commit message
+# define tag name
 tag="$project_name-$environment_name-$timestamp"
 
 # create tag
