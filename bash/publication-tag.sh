@@ -1,28 +1,25 @@
 #!/bin/bash
 
 # check arguments
+
 if [ -z "$1" ]; then
-    echo "Errore: specificare il nome dell'progetto come argomento dello script."
+    echo "Error: Specify environment name."
     exit 1
 fi
-
-if [ -z "$2" ]; then
-    echo "Errore: specificare il nome dell'ambiente come argomento dello script."
-    exit 1
-fi
-
-# define project name
-project_name="$1"
 
 # define environment name
-environment_name="$2"
+environment_name="$1"
+
+
+# read project name
+project_name=$(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
 
 # read project version
 version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
 
 # check project version
 if [ -z "$version" ]; then
-    echo "Errore: impossibile trovare la versione nel file package.json."
+    echo "Error: Cannot find version in package.json file."
     exit 1
 fi
 
@@ -38,11 +35,14 @@ git commit -m "$message"
 # timestamp
 timestamp=$(date +"%Y%m%d%H%M%S")
 
-# define commit message
-tag="$project_name-$environment_name-$timestamp"
+# define tag name
+tag_name="$project_name-$environment_name-$timestamp"
 
 # create tag
-git tag "$tag"
+git tag "$tag_name"
 
 # push head with tags
 git push origin HEAD --tags
+
+# push head with tags
+git ls-remote origin -n 1
