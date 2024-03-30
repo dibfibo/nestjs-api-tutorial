@@ -10,6 +10,7 @@ fi
 # define environment name
 environment_name="$1"
 
+
 # read project name
 echo $(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
 project_name=$(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
