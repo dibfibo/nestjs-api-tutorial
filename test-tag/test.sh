@@ -31,4 +31,4 @@ tag="$project_name-$environment_name-$timestamp"
 git tag "$tag"
 
 # Pusha il tag
-git push origin "$tag"
+git push origin HEAD --tags
