@@ -9,8 +9,14 @@ environment_name="environment_name" # Imposta manualmente o recupera da una vari
 # Genera timestamp
 timestamp=$(date +"%Y%m%d%H%M%S")
 
+# Crea il nome del tag
+tag="$progetto-$ambiente-$timestamp"
+
+# Crea il messaggio
+message="$project_name - pubblicazione in $environment_name"
+
 # Crea il tag
-git tag "$project_name-$environment_name-$timestamp"
+git tag "$tag" -m "$message"
 
 # Pusha il tag
-git push origin "$project_name-$environment_name-$timestamp"
+git push origin "$tag"
