@@ -27,7 +27,7 @@ if [ -z "$version" ]; then
 fi
 
 # define commit message
-message="$project_name - $version - pubblicazione in $environment_name"
+message="$project_name - $version - $environment_name"
 
 # stage changes
 git add .
