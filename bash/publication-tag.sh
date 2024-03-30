@@ -12,8 +12,11 @@ project_name="cms"
 # Recupera il nome dell'ambiente
 environment_name="$1" # Imposta manualmente o recupera da una variabile
 
+#version
+version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
+
 # Crea il messaggio
-message="$project_name - pubblicazione in $environment_name"
+message="$project_name - $version - pubblicazione in $environment_name"
 
 # stage changes
 git add .
