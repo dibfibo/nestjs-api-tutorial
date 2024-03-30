@@ -2,15 +2,20 @@
 
 # Controlla se è stato fornito il nome dell'ambiente come argomento
 if [ -z "$1" ]; then
+    echo "Errore: specificare il nome dell'progetto come argomento dello script."
+    exit 1
+fi
+
+if [ -z "$2" ]; then
     echo "Errore: specificare il nome dell'ambiente come argomento dello script."
     exit 1
 fi
 
 # Recupera il nome del progetto
-project_name="cms"
+project_name="$1"
 
 # Recupera il nome dell'ambiente
-environment_name="$1" # Imposta manualmente o recupera da una variabile
+environment_name="$2" # Imposta manualmente o recupera da una variabile
 
 #version
 version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
