@@ -8,10 +8,6 @@ import { JwtGuard } from 'src/auth/guard';
 export class UserController {
   @Get('me')
   me(@GetUser() user: User) {
-    console.log({
-      user,
-    });
-
     return user;
   }
 
