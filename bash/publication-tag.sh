@@ -8,11 +8,17 @@ if [ -z "$1" ]; then
 fi
 
 # define environment name
-environment_name="$1"
+environment="$1"
 
 
 # read project name
-project_name=$(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
+tag=$(grep -o '"tag": *"[^"]*"' package.json | sed 's/"tag": "\(.*\)"/\1/')
+
+# check project name
+if [ -z "$tag" ]; then
+    echo "Error: Cannot find tag in package.json file."
+    exit 1
+fi
 
 # read project version
 version=$(grep -o '"version": *"[^"]*"' package.json | sed 's/"version": "\(.*\)"/\1/')
@@ -24,7 +30,7 @@ if [ -z "$version" ]; then
 fi
 
 # define commit message
-message="$project_name - $version - $environment_name"
+message="$tag - $version - $environment --publication"
 
 # stage changes
 git add .
@@ -36,13 +42,14 @@ git commit -m "$message"
 timestamp=$(date +"%Y%m%d%H%M%S")
 
 # define tag name
-tag_name="$project_name-$environment_name-$timestamp"
+tag="$tag-$environment-$timestamp"
 
 # create tag
-git tag "$tag_name"
+git tag "$tag"
 
 # push head with tags
 git push origin HEAD --tags
 
 # push head with tags
-git ls-remote origin -n 1
+echo "$timestamp"
+git log --oneline -n 1 HEAD
