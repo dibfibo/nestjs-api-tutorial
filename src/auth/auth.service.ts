@@ -25,7 +25,7 @@ export class AuthService {
   ) {}
 
   signup(dto: AuthDto) {
-    return this.createUser$(dto).pipe(
+    return this.createdUser$(dto).pipe(
       switchMap((user) => this.accessToken$(user)),
       catchError((error) => {
         return throwError(() => {
@@ -37,7 +37,7 @@ export class AuthService {
     );
   }
 
-  private createUser$(dto: AuthDto) {
+  private createdUser$(dto: AuthDto) {
     return from(argon.hash(dto.password)).pipe(
       switchMap((hash) =>
         from(
@@ -53,7 +53,7 @@ export class AuthService {
   }
 
   signin(dto: AuthDto) {
-    return this.findUser$(dto).pipe(
+    return this.validFoundUser$(dto).pipe(
       switchMap((user) => this.accessToken$(user)),
       catchError(() =>
         throwError(() => new ForbiddenException('Credentials incorrect')),
@@ -61,14 +61,8 @@ export class AuthService {
     );
   }
 
-  findUser$(dto: AuthDto) {
-    return from(
-      this.Prisma.user.findUnique({
-        where: {
-          email: dto.email,
-        },
-      }),
-    ).pipe(
+  private validFoundUser$ (dto: AuthDto) {
+    return this.foundUser$(dto).pipe(
       switchMap((user) =>
         forkJoin({
           user: of(user),
@@ -77,6 +71,16 @@ export class AuthService {
       ),
       map(({ user }) => user),
     );
+  }
+
+  private foundUser$(dto: AuthDto) {
+    return from(
+      this.Prisma.user.findUnique({
+        where: {
+          email: dto.email,
+        },
+      }),
+    )
   }
 
   private validPassword$(user: User, dto: AuthDto) {

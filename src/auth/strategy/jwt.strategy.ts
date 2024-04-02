@@ -19,12 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   validate(payload: { sub: number; email: string }) {
-    return this.findUser$(payload.sub).pipe(
-      map((user) => {
-        delete user.hash;
-        return user;
-      }),
-    );
+    return this.findUser$(payload.sub);
   }
 
   private findUser$(id: User['id']) {
