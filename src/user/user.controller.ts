@@ -4,7 +4,7 @@ import { GetUser$ } from 'src/auth/decorator';
 import { JwtGuard } from 'src/auth/guard';
 import { EditUserDto } from './dto';
 import { UserService } from './user.service';
-import { firstValueFrom, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @UseGuards(JwtGuard)
 @Controller('users')

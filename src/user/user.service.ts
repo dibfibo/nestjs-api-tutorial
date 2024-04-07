@@ -18,21 +18,14 @@ export class UserService {
   }
 
   editUser(user$: Observable<User>, dto: EditUserDto) {
-    return this.updatedUser$(user$, dto).pipe(
-      switchMap(user => this.me(of(user)))
-    );
-  }
-
-  private updatedUser$(user$: Observable<User>, dto: EditUserDto) {
     return user$.pipe(
       switchMap((user) =>
-        from(
-          this.prisma.user.update({
-            where: { id: user.id },
-            data: { ...dto },
-          }),
-        ),
+        this.prisma.user.update({
+          where: { id: user.id },
+          data: { ...dto },
+        }),
       ),
+      switchMap((user) => this.me(of(user))),
     );
   }
 }

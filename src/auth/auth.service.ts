@@ -5,28 +5,19 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import {
-  catchError,
-  forkJoin,
-  from,
-  map,
-  of,
-  switchMap,
-  throwError,
-} from 'rxjs';
+import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
 import { User } from '@prisma/client';
 
 @Injectable({})
 export class AuthService {
   constructor(
     private Prisma: PrismaService,
-    private jwt: JwtService,
-    private config: ConfigService,
+    private JWT: JwtService,
+    private Config: ConfigService,
   ) {}
 
   signup(dto: AuthDto) {
-    return this.createdUser$(dto).pipe(
-      switchMap((user) => this.accessToken$(user)),
+    return this.accessToken$(this.createdUser$(dto)).pipe(
       catchError((error) => {
         return throwError(() => {
           if (error instanceof PrismaClientKnownRequestError)
@@ -39,68 +30,48 @@ export class AuthService {
 
   private createdUser$(dto: AuthDto) {
     return from(argon.hash(dto.password)).pipe(
-      switchMap((hash) =>
-        from(
-          this.Prisma.user.create({
-            data: {
-              email: dto.email,
-              hash,
-            },
-          }),
-        ),
-      ),
+      map((hash) => ({ email: dto.email, hash: hash })),
+      switchMap((data) => this.Prisma.user.create({ data })),
     );
   }
 
   signin(dto: AuthDto) {
-    return this.validFoundUser$(dto).pipe(
-      switchMap((user) => this.accessToken$(user)),
+    return this.accessToken$(
+      this.withVerifiedPassword$(this.findUser$(dto), dto),
+    ).pipe(
       catchError(() =>
         throwError(() => new ForbiddenException('Credentials incorrect')),
       ),
     );
   }
 
-  private validFoundUser$ (dto: AuthDto) {
-    return this.foundUser$(dto).pipe(
-      switchMap((user) =>
-        forkJoin({
-          user: of(user),
-          valid: this.validPassword$(user, dto),
-        }),
-      ),
-      map(({ user }) => user),
-    );
-  }
-
-  private foundUser$(dto: AuthDto) {
+  private findUser$(dto: AuthDto) {
     return from(
       this.Prisma.user.findUnique({
         where: {
           email: dto.email,
         },
       }),
-    )
-  }
-
-  private validPassword$(user: User, dto: AuthDto) {
-    return from(argon.verify(user.hash, dto.password)).pipe(
-      switchMap((valid) => (valid ? of(valid) : throwError(() => {}))),
     );
   }
 
-  private accessToken$(user: User) {
-    return from(
-      this.jwt.signAsync(
-        {
-          sub: user.id,
-          email: user.email,
-        },
-        {
+  private withVerifiedPassword$(user$: Observable<User>, dto: AuthDto) {
+    return user$.pipe(
+      switchMap((user) => argon.verify(user.hash, dto.password)),
+      switchMap((valid) => (valid ? user$ : throwError(() => {}))),
+    );
+  }
+
+  private accessToken$(user$: Observable<User>) {
+    return user$.pipe(
+      map((user) => ({ sub: user.id, email: user.email })),
+      switchMap((payload) =>
+        this.JWT.signAsync(payload, {
           expiresIn: '15m',
-          secret: this.config.get('JWT_SECRET'),
-        },
+          secret: this.Config.get('JWT_SECRET'),
+        }),
       ),
-    ).pipe(switchMap((access_token) => of({ access_token })));
+      map((access_token) => ({ access_token })),
+    );
   }
 }

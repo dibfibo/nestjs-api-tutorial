@@ -19,16 +19,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   validate(payload: { sub: number; email: string }) {
-    return this.findUser$(payload.sub);
-  }
-
-  private findUser$(id: User['id']) {
-    return from(
-      this.prisma.user.findUnique({
-        where: {
-          id: id,
-        },
-      }),
-    ).pipe(switchMap((user) => of(user)));
+    return of(payload.sub).pipe(
+      switchMap((id) => this.prisma.user.findUnique({ where: { id } })),
+    );
   }
 }

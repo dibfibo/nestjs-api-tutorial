@@ -3,39 +3,62 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
+import { GetUser$ } from 'src/auth/decorator';
+import { Observable } from 'rxjs';
+import { User } from '@prisma/client';
+import { JwtGuard } from 'src/auth/guard';
+import { CreateBookmarkDto, EditBookmarkDto } from './dto';
 
+@UseGuards(JwtGuard)
 @Controller('bookmarks')
 export class BookmarkController {
   constructor(private Bookmark: BookmarkService) {}
 
   @Get()
-  findAll() {
-    return this.Bookmark.findAll();
+  findUserBookmark(@GetUser$() user$: Observable<User>) {
+    return this.Bookmark.findUserBookmark(user$);
   }
 
   @Get(':id')
-  findById(@Param('id', ParseIntPipe) id: number) {
-    return this.Bookmark.findById(id);
+  findUserBookmarkById(
+    @GetUser$() user$: Observable<User>,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.Bookmark.findUserBookmarkById(user$, id);
   }
 
   @Post()
-  create(@Body() dto: any) {
-    return this.Bookmark.create(dto);
+  UserBookmark(
+    @GetUser$() user$: Observable<User>,
+    @Body() dto: CreateBookmarkDto,
+  ) {
+    return this.Bookmark.createUserBookmark(user$, dto);
   }
 
   @Patch(':id')
-  edit(@Param('id', ParseIntPipe) id: number, @Body() dto: any) {
-    return this.Bookmark.edit(id, dto);
+  editUserBookmark(
+    @GetUser$() user$: Observable<User>,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: EditBookmarkDto,
+  ) {
+    return this.Bookmark.editUserBookmark(user$, id, dto);
   }
 
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.Bookmark.delete(id);
+  deleteUserBookmark(
+    @GetUser$() user$: Observable<User>,
+    @Param('id', ParseIntPipe) id: number,
+  ) {
+    return this.Bookmark.deleteUserBookmark(user$, id);
   }
 }
