@@ -6,7 +6,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthDto } from 'src/auth/dto';
 import { EditUserDto } from 'src/user/dto';
 import { CreateBookmarkDto, EditBookmarkDto } from 'src/bookmark/dto';
-import { inspect } from 'util';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

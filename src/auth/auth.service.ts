@@ -5,7 +5,15 @@ import * as argon from 'argon2';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { catchError, from, map, Observable, switchMap, throwError } from 'rxjs';
+import {
+  catchError,
+  from,
+  map,
+  Observable,
+  of,
+  switchMap,
+  throwError,
+} from 'rxjs';
 import { User } from '@prisma/client';
 
 @Injectable({})
@@ -17,7 +25,8 @@ export class AuthService {
   ) {}
 
   signup(dto: AuthDto) {
-    return this.accessToken$(this.createdUser$(dto)).pipe(
+    return this.createdUser$(dto).pipe(
+      switchMap((user) => this.accessToken$(user)),
       catchError((error) => {
         return throwError(() => {
           if (error instanceof PrismaClientKnownRequestError)
@@ -36,9 +45,9 @@ export class AuthService {
   }
 
   signin(dto: AuthDto) {
-    return this.accessToken$(
-      this.withVerifiedPassword$(this.findUser$(dto), dto),
-    ).pipe(
+    return this.findUser$(dto).pipe(
+      switchMap((user) => this.withVerifiedPassword$(user, dto)),
+      switchMap((user) => this.accessToken$(user)),
       catchError(() =>
         throwError(() => new ForbiddenException('Credentials incorrect')),
       ),
@@ -55,23 +64,21 @@ export class AuthService {
     );
   }
 
-  private withVerifiedPassword$(user$: Observable<User>, dto: AuthDto) {
-    return user$.pipe(
-      switchMap((user) => argon.verify(user.hash, dto.password)),
-      switchMap((valid) => (valid ? user$ : throwError(() => {}))),
+  private withVerifiedPassword$(user: User, dto: AuthDto) {
+    return from(argon.verify(user.hash, dto.password)).pipe(
+      switchMap((valid) => (valid ? of(user) : throwError(() => {}))),
     );
   }
 
-  private accessToken$(user$: Observable<User>) {
-    return user$.pipe(
-      map((user) => ({ sub: user.id, email: user.email })),
-      switchMap((payload) =>
-        this.JWT.signAsync(payload, {
+  private accessToken$(user: User) {
+    return from(
+      this.JWT.signAsync(
+        { sub: user.id, email: user.email },
+        {
           expiresIn: '15m',
           secret: this.Config.get('JWT_SECRET'),
-        }),
+        },
       ),
-      map((access_token) => ({ access_token })),
-    );
+    ).pipe(map((access_token) => ({ access_token })));
   }
 }
